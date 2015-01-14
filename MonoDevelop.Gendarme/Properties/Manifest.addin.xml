@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ExtensionModel>
+    <Extension path = "/MonoDevelop/Ide/Commands">
+        <Command id = "MonoDevelop.Gendarme.GendarmeCommands.Analyze"
+             _label = "Run Gendarme"
+             _description = "Perform Gendarme Analyze."
+             defaultHandler="MonoDevelop.Gendarme.GendarmeHandler"
+             />
+    </Extension>
+    
+    <Extension path = "/MonoDevelop/Ide/ContextMenu/ProjectPad">
+        <Condition id="ItemType" value="Project">
+          <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze"/>
+        </Condition>
+
+        <Condition id="ItemType" value="Solution">
+          <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze"/>
+        </Condition>
+    </Extension>
+
+
+  <Extension path="/MonoDevelop/Ide/MainMenu/Tools">
+    <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze"/>
+
+  </Extension>
+
+  <Extension path = "/MonoDevelop/SourceEditor2/ContextMenu/Editor">
+    <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze"/>
+  </Extension>
+               
+</ExtensionModel>
