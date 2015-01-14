@@ -7,7 +7,7 @@
     <ProjectGuid>{F36EDBFD-91DA-4549-9A9D-E82DB7F652CB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.Gendarme</RootNamespace>
-    <AssemblyName>DateInserter</AssemblyName>
+    <AssemblyName>MonoDevelop.Gendarme</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
