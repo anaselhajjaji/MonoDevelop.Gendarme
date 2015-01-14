@@ -122,7 +122,7 @@ namespace MonoDevelop.Gendarme
                     Task gendarmeWarning = new Task (new FilePath (filePath),
                         warningDesc,
                         0,
-                        lineNumber - 1,
+                        lineNumber,
                         TaskSeverity.Warning,
                         TaskPriority.Normal,
                         IdeApp.ProjectOperations.CurrentSelectedProject,
