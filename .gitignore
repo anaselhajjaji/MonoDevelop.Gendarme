@@ -64,3 +64,27 @@ packages/Mono.Gendarme.2.11.0.20121120/tools/Mono.Cecil.Mdb.dll
 packages/Mono.Gendarme.2.11.0.20121120/tools/Mono.Cecil.dll
 
 packages/Mono.Gendarme.2.11.0.20121120/tools/rules.xml
+
+*.maddin
+
+*.data
+
+MonoDevelop.Gendarme/bin/Debug/addin-db-001/fdb-lock
+
+*.dll
+
+MonoDevelop.Gendarme/obj/Debug/.NETFramework,Version=v4.0.AssemblyAttribute.cs
+
+*.mdb
+
+MonoDevelop.Gendarme/obj/Debug/MonoDevelop-Addin-Deps.g.cs
+
+MonoDevelop.Gendarme/obj/Debug/MonoDevelop.Gendarme.Properties.Manifest.addin.xml
+
+MonoDevelop.Gendarme/bin/Debug/addin-db-001/host-index
+
+MonoDevelop.Gendarme/bin/Debug/addin-db-001/fdb-update-lock
+
+MonoDevelop.Gendarme/bin/Debug/addin-db-001/hosts/XamarinStudio.addins
+
+MonoDevelop.Gendarme/obj/Debug/MonoDevelop.Gendarme.csproj.FilesWrittenAbsolute.txt
