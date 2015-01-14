@@ -94,6 +94,9 @@ namespace MonoDevelop.Gendarme
 
                 aRunner.Execute ();
 
+                // Clear all the errors if there is any.
+                TaskService.Errors.ClearByOwner(this);
+
                 List<Task> gendarmeAnalysisResultList = new List<Task> ();
 
                 Collection<Defect> defects = aRunner.Defects;
@@ -112,15 +115,18 @@ namespace MonoDevelop.Gendarme
                         lineNumber = Convert.ToInt32 (lineNumberStr);
                     }
 
+                    // warning description
+                    string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem
+                        + " The solution: " + defect.Rule.Solution;
 
                     Task gendarmeWarning = new Task (new FilePath (filePath),
-                                           defect.Rule.ToString (),
-                                           0,
-                                           lineNumber,
-                                           TaskSeverity.Warning,
-                                           TaskPriority.Normal,
-                                           IdeApp.ProjectOperations.CurrentSelectedProject
-                                       );
+                        warningDesc,
+                        0,
+                        lineNumber - 1,
+                        TaskSeverity.Warning,
+                        TaskPriority.Normal,
+                        IdeApp.ProjectOperations.CurrentSelectedProject,
+                        this);
 
                     gendarmeAnalysisResultList.Add (gendarmeWarning);
 
