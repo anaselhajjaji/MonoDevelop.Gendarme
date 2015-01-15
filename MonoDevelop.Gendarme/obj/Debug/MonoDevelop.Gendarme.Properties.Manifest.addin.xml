@@ -59,7 +59,11 @@ limitations under the License.
         <Import assembly="Mono.Cecil.Pdb.dll" />
     </Runtime>
     <Extension path="/MonoDevelop/Ide/Commands">
-        <Command id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" _label="Run Gendarme" _description="Perform Gendarme Analyze." defaultHandler="MonoDevelop.Gendarme.GendarmeHandler" />
+        <Command 
+            id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" 
+            _label="Run Gendarme" 
+            _description="Perform Gendarme Analyze." 
+            defaultHandler="MonoDevelop.Gendarme.GendarmeHandler" />
     </Extension>
     <Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
         <Condition id="ItemType" value="Project">
