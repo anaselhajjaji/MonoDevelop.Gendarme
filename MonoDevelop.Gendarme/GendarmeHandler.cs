@@ -152,7 +152,9 @@ namespace MonoDevelop.Gendarme
                     lineNumber = Convert.ToInt32 (lineNumberStr);
                 }
                 // warning description
-                string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem + " The solution: " + defect.Rule.Solution;
+                string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem 
+                    + " The solution: " + defect.Rule.Solution
+                    + "\r\nMore information: " + defect.Rule.Uri.ToString();
                 Task gendarmeWarning = new Task (new FilePath (filePath), warningDesc, 0, lineNumber, TaskSeverity.Warning, TaskPriority.Normal, IdeApp.ProjectOperations.CurrentSelectedProject, this);
                 gendarmeAnalysisResultList.Add (gendarmeWarning);
             }

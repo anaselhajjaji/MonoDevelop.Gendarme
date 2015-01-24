@@ -58,6 +58,7 @@ limitations under the License.
         <Import assembly="Mono.Cecil.Mdb.dll" />
         <Import assembly="Mono.Cecil.Pdb.dll" />
     </Runtime>
+
     <Extension path="/MonoDevelop/Ide/Commands">
         <Command 
             id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" 
@@ -65,6 +66,7 @@ limitations under the License.
             _description="Perform Gendarme Analyze." 
             defaultHandler="MonoDevelop.Gendarme.GendarmeHandler" />
     </Extension>
+
     <Extension path="/MonoDevelop/Ide/ContextMenu/ProjectPad">
         <Condition id="ItemType" value="Project">
             <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" />
@@ -73,10 +75,13 @@ limitations under the License.
             <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" />
         </Condition>
     </Extension>
+
     <Extension path="/MonoDevelop/Ide/MainMenu/Tools">
         <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" />
     </Extension>
+
     <Extension path="/MonoDevelop/SourceEditor2/ContextMenu/Editor">
         <CommandItem id="MonoDevelop.Gendarme.GendarmeCommands.Analyze" />
     </Extension>
+
 </Addin>
