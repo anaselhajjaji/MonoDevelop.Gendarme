@@ -12,17 +12,17 @@
 -->
 <Addin 
     id="MonoDevelop.Gendarme" 
-    namespace="MonoDevelop.Gendarme" 
     name="Gendarme Support" 
     author="Anas EL HAJJAJI" 
+    url = "https://github.com/anaselhajjaji/MonoDevelop.Gendarme"
     copyright="APL 2.0" 
     description="Provides gendarme support to MonoDevelop" 
     category="IDE extensions" 
     version="0.2.0">
 
     <Dependencies>
-        <Addin id="Core" version="5.0"/>
-        <Addin id="Ide" version="5.0"/>
+        <Addin id="MonoDevelop.Core" version="5.0"/>
+        <Addin id="MonoDevelop.Ide" version="5.0"/>
     </Dependencies>
 
     <Runtime>

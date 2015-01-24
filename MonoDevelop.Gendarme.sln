@@ -14,7 +14,4 @@ Global
 		{F36EDBFD-91DA-4549-9A9D-E82DB7F652CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F36EDBFD-91DA-4549-9A9D-E82DB7F652CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = MonoDevelop.Gendarme\MonoDevelop.Gendarme.csproj
-	EndGlobalSection
 EndGlobal

@@ -121,7 +121,7 @@
     <Compile Include="GendarmeCommands.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Manifest.addin.xml" />
+    <EmbeddedResource Include="MonoDevelop.Gendarme.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets')" />
