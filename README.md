@@ -1,5 +1,5 @@
 # MonoDevelop.Gendarme
-MonoDevelop.Gendarme is an Addin for Xamarin Studio and MonoDevelop.
+MonoDevelop.Gendarme is an Addin for Xamarin Studio / MonoDevelop version 5.
 
 Usage
 -----
