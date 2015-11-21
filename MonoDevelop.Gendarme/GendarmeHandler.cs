@@ -117,8 +117,12 @@ namespace MonoDevelop.Gendarme
 
                 foreach (FilePath file in files) {
                     try {
-                        if (!file.Extension.Equals(".mdb")) {
+                        if (file.Extension.Equals(".dll") || file.Extension.Equals(".exe")) {
+                            monitor.Log.WriteLine (GettextCatalog.GetString ("Register assembly " + file.FullPath + " for analysis."));
                             aRunner.Assemblies.Add (AssemblyDefinition.ReadAssembly (file.FullPath, new ReaderParameters { AssemblyResolver = AssemblyResolver.Resolver }));
+                        }
+                        else {
+                            monitor.Log.WriteLine (GettextCatalog.GetString ("Skipping the file " + file.FullPath + "."));
                         }
                     } catch (BadImageFormatException bife) {
                         monitor.ReportError("Can't add assembly " + file.FullPath, bife); 
