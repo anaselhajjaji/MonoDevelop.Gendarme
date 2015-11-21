@@ -65,8 +65,10 @@ namespace MonoDevelop.Gendarme
                 Run();
                 TearDown();
             }
-            catch (Exception e)
+            catch
             {
+                // Something wrong happened.
+                // TODO Log or do something if happened.
             }
         }
     }
