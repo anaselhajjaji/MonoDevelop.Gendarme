@@ -3,11 +3,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectTypeGuids>{7DBEB09D-BB9F-4D92-A141-A009135475EF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{86F6BF2A-E449-4B3E-813B-9ACC37E5545F};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProjectGuid>{F36EDBFD-91DA-4549-9A9D-E82DB7F652CB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>MonoDevelop.Gendarme</RootNamespace>
     <AssemblyName>MonoDevelop.Gendarme</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -124,7 +125,7 @@
     <EmbeddedResource Include="MonoDevelop.Gendarme.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.1.4\build\net40\MonoDevelop.Addins.targets')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.2.3\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
