@@ -23,12 +23,12 @@ using Gendarme.Framework;
 
 namespace MonoDevelop.Gendarme
 {
-    sealed class GendarmeHandler : CommandHandler
+    class GendarmeHandler : CommandHandler
     {
         static IAsyncOperation currentGendarmeAnalysisOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
         private static object locker = new object();
 
-        private override void Run()
+        protected override void Run()
         {
             if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
                 return;
@@ -118,7 +118,7 @@ namespace MonoDevelop.Gendarme
             }
         }
 
-        private override void Update(CommandInfo info)
+        protected override void Update(CommandInfo info)
         {
             if ((IdeApp.ProjectOperations.CurrentSelectedItem is Project)
                 || (IdeApp.ProjectOperations.CurrentSelectedItem is Solution))
