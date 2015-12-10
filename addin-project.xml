@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 -->
-<AddinProject appVersion="5.9.5">
+<AddinProject appVersion="5.0">
   <Project>
     <AddinFile>MonoDevelop.Gendarme/bin/Release/MonoDevelop.Gendarme.dll</AddinFile>
     <BuildFile>MonoDevelop.Gendarme.sln</BuildFile>
