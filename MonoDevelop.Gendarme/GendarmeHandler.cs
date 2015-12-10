@@ -162,7 +162,9 @@ namespace MonoDevelop.Gendarme
             }
             catch (Exception e)
             {
-                monitor.ReportError("Failed to analyse.", e);
+                monitor.ReportError("Failed to analyse. \r\n" 
+                    + "Message: " + e.Message + "\r\n" 
+                    + "Stacktrace: " + e.StackTrace, e);
             }
         }
 
@@ -182,8 +184,9 @@ namespace MonoDevelop.Gendarme
                     // Get line number
                     int starts = defect.Source.IndexOf("(") + 2;
                     string lineNumberStr = defect.Source.Substring(starts, defect.Source.IndexOf(")") - starts);
-                    lineNumber = Convert.ToInt32(lineNumberStr);
+                    Int32.TryParse(lineNumberStr.Trim(), out lineNumber);
                 }
+
                 // warning description
                 string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem
                                      + " The solution: " + defect.Rule.Solution
