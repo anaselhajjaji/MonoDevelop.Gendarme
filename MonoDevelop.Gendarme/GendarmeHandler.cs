@@ -23,11 +23,12 @@ using Gendarme.Framework;
 
 namespace MonoDevelop.Gendarme
 {
-    class GendarmeHandler : CommandHandler
+    sealed class GendarmeHandler : CommandHandler
     {
         static IAsyncOperation currentGendarmeAnalysisOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+        private static object locker = new object();
 
-        protected override void Run()
+        private override void Run()
         {
             if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
                 return;
@@ -52,7 +53,10 @@ namespace MonoDevelop.Gendarme
             }
 
             IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor();
-            currentGendarmeAnalysisOperation = monitor.AsyncOperation;
+            lock (locker)
+            {
+                currentGendarmeAnalysisOperation = monitor.AsyncOperation;
+            }
             DispatchService.BackgroundDispatch(new StatefulMessageHandler(BuildAnalyzeAsync), new object[]
                 {
                     monitor,
@@ -60,7 +64,7 @@ namespace MonoDevelop.Gendarme
                 });
         }
 
-        void BuildAnalyzeAsync(object ob)
+        private void BuildAnalyzeAsync(object ob)
         {
             object[] data = (object[])ob;
             IProgressMonitor monitor = (IProgressMonitor)data[0];
@@ -114,7 +118,7 @@ namespace MonoDevelop.Gendarme
             }
         }
 
-        protected override void Update(CommandInfo info)
+        private override void Update(CommandInfo info)
         {
             if ((IdeApp.ProjectOperations.CurrentSelectedItem is Project)
                 || (IdeApp.ProjectOperations.CurrentSelectedItem is Solution))
@@ -162,8 +166,8 @@ namespace MonoDevelop.Gendarme
             }
             catch (Exception e)
             {
-                monitor.ReportError("Failed to analyse. \r\n" 
-                    + "Message: " + e.Message + "\r\n" 
+                monitor.ReportError("Failed to analyse. " + Environment.NewLine
+                    + "Message: " + e.Message + Environment.NewLine
                     + "Stacktrace: " + e.StackTrace, e);
             }
         }
@@ -180,17 +184,17 @@ namespace MonoDevelop.Gendarme
                 int lineNumber = 0;
                 if (!string.IsNullOrEmpty(defect.Source))
                 {
-                    filePath = defect.Source.Substring(0, defect.Source.IndexOf("("));
+                    filePath = defect.Source.Substring(0, defect.Source.IndexOf('('));
                     // Get line number
                     int starts = defect.Source.IndexOf("(") + 2;
-                    string lineNumberStr = defect.Source.Substring(starts, defect.Source.IndexOf(")") - starts);
+                    string lineNumberStr = defect.Source.Substring(starts, defect.Source.IndexOf(')') - starts);
                     Int32.TryParse(lineNumberStr.Trim(), out lineNumber);
                 }
 
                 // warning description
                 string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem
-                                     + " The solution: " + defect.Rule.Solution
-                                     + "\r\nMore information: " + defect.Rule.Uri.ToString();
+                                     + " The solution: " + defect.Rule.Solution + Environment.NewLine
+                                     + "More information: " + defect.Rule.Uri.ToString();
                 Task gendarmeWarning = new Task(new FilePath(filePath), warningDesc, 0, lineNumber, TaskSeverity.Warning, TaskPriority.Normal, IdeApp.ProjectOperations.CurrentSelectedProject, this);
                 gendarmeAnalysisResultList.Add(gendarmeWarning);
             }
