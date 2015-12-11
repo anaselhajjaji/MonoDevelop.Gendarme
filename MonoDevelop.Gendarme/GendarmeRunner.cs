@@ -1,12 +1,12 @@
-﻿using System;
-using System.Reflection;
-using System.IO;
-
-using Gendarme.Framework;
+﻿using Gendarme.Framework;
 using Gendarme.Framework.Engines;
 
 namespace MonoDevelop.Gendarme
 {
+    using System;
+    using System.IO;
+    using System.Reflection;
+
     /// <summary>
     /// Gendarme runner.
     /// </summary>

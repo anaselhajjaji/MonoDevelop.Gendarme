@@ -1,28 +1,28 @@
-﻿using System;
-using System.Collections.Specialized;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Web.Configuration;
-using System.Collections.ObjectModel;
-using System.Threading;
-using System.Reflection;
-
-using Mono.TextEditor;
-using Mono.Cecil;
-
-using MonoDevelop.Components.Commands;
-using MonoDevelop.Ide;
-using MonoDevelop.Ide.Gui;
-using MonoDevelop.Core;
-using MonoDevelop.Projects;
-using MonoDevelop.Ide.Tasks;
-
-using Gendarme.Framework;
+﻿using Gendarme.Framework;
 
 namespace MonoDevelop.Gendarme
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Collections.Specialized;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Reflection;
+    using System.Threading;
+    using System.Web.Configuration;
+
+    using Mono.Cecil;
+    using Mono.TextEditor;
+
+    using MonoDevelop.Components.Commands;
+    using MonoDevelop.Core;
+    using MonoDevelop.Ide;
+    using MonoDevelop.Ide.Gui;
+    using MonoDevelop.Ide.Tasks;
+    using MonoDevelop.Projects;
+
     /// <summary>
     /// Gendarme handler.
     /// </summary>
@@ -131,10 +131,10 @@ namespace MonoDevelop.Gendarme
         /// <summary>
         /// Build and analyze asynchronously.
         /// </summary>
-        /// <param name="ob">Ob.</param>
-        private void BuildAnalyzeAsync(object ob)
+        /// <param name="inputData">The input data.</param>
+        private void BuildAnalyzeAsync(object inputData)
         {
-            object[] data = (object[])ob;
+            object[] data = (object[])inputData;
             IProgressMonitor monitor = (IProgressMonitor)data[0];
             ConfigurationSelector configuration = (ConfigurationSelector)data[1];
                          
