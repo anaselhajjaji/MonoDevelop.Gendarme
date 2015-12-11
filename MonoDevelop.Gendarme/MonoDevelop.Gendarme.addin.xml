@@ -18,7 +18,7 @@
     copyright="APL 2.0" 
     description="Provides gendarme support to MonoDevelop" 
     category="IDE extensions" 
-    version="0.5.0">
+    version="0.6.0">
 
     <Dependencies>
         <Addin id="MonoDevelop.Core" version="5.0"/>
