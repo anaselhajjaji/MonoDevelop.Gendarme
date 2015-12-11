@@ -7,36 +7,28 @@ using Gendarme.Framework.Engines;
 
 namespace MonoDevelop.Gendarme
 {
+    /// <summary>
+    /// Gendarme runner.
+    /// </summary>
     [EngineDependency(typeof(SuppressMessageEngine))]
     public class GendarmeRunner : Runner
     {
-        private static TypeFilter RuleTypeFilter = new TypeFilter(RuleFilter);
+        /// <summary>
+        /// The rule type filter.
+        /// </summary>
+        private static TypeFilter ruleTypeFilter = new TypeFilter(RuleFilter);
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MonoDevelop.Gendarme.GendarmeRunner"/> class.
+        /// </summary>
         public GendarmeRunner()
         {
-            IgnoreList = new BasicIgnoreList(this);
+            this.IgnoreList = new BasicIgnoreList(this);
         }
 
-        private static bool RuleFilter(Type type, object interfaceName)
-        {
-            return (type.ToString() == (interfaceName as string));
-        }
-
-        private void LoadRulesFromAssembly(string assemblyName)
-        {
-            AssemblyName aname = AssemblyName.GetAssemblyName(Path.GetFullPath(assemblyName));
-            Assembly a = Assembly.Load(aname);
-            foreach (Type t in a.GetTypes ())
-            {
-                if (t.IsAbstract || t.IsInterface)
-                    continue;
-                if (t.FindInterfaces(RuleTypeFilter, "Gendarme.Framework.IRule").Length > 0)
-                {
-                    Rules.Add((IRule)Activator.CreateInstance(t));
-                }
-            }
-        }
-
+        /// <summary>
+        /// Loads the rules.
+        /// </summary>
         public void LoadRules()
         {
             // load every dll to check for rules...
@@ -53,17 +45,21 @@ namespace MonoDevelop.Gendarme
                     case "Gendarme.Framework.dll":
                         continue;
                 }
-                LoadRulesFromAssembly(info.FullName);
+
+                this.LoadRulesFromAssembly(info.FullName);
             }
         }
 
+        /// <summary>
+        /// Execute the analysis.
+        /// </summary>
         public void Execute()
         {
             try
             {
-                Initialize();
-                Run();
-                TearDown();
+                this.Initialize();
+                this.Run();
+                this.TearDown();
             }
             catch
             {
@@ -71,6 +67,38 @@ namespace MonoDevelop.Gendarme
                 // TODO Log or do something if happened.
             }
         }
+
+        /// <summary>
+        /// Build RuleFilter.
+        /// </summary>
+        /// <returns><c>true</c>, if filter was ruled, <c>false</c> otherwise.</returns>
+        /// <param name="type">Type.</param>
+        /// <param name="interfaceName">Interface name.</param>
+        private static bool RuleFilter(Type type, object interfaceName)
+        {
+            return type.ToString() == (interfaceName as string);
+        }
+
+        /// <summary>
+        /// Loads the rules from assembly.
+        /// </summary>
+        /// <param name="assemblyName">Assembly name.</param>
+        private void LoadRulesFromAssembly(string assemblyName)
+        {
+            AssemblyName aname = AssemblyName.GetAssemblyName(Path.GetFullPath(assemblyName));
+            Assembly a = Assembly.Load(aname);
+            foreach (Type t in a.GetTypes())
+            {
+                if (t.IsAbstract || t.IsInterface)
+                {
+                    continue;
+                }
+
+                if (t.FindInterfaces(ruleTypeFilter, "Gendarme.Framework.IRule").Length > 0)
+                {
+                    Rules.Add((IRule)Activator.CreateInstance(t));
+                }
+            }
+        }
     }
 }
-

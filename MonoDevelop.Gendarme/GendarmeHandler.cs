@@ -23,15 +23,30 @@ using Gendarme.Framework;
 
 namespace MonoDevelop.Gendarme
 {
-    class GendarmeHandler : CommandHandler
+    /// <summary>
+    /// Gendarme handler.
+    /// </summary>
+    public class GendarmeHandler : CommandHandler
     {
-        static IAsyncOperation currentGendarmeAnalysisOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+        /// <summary>
+        /// The current gendarme analysis operation.
+        /// </summary>
+        private static IAsyncOperation currentGendarmeAnalysisOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+
+        /// <summary>
+        /// The locker.
+        /// </summary>
         private static object locker = new object();
 
+        /// <summary>
+        /// Run the analysis.
+        /// </summary>
         protected override void Run()
         {
             if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
+            {
                 return;
+            }
 
             ConfigurationSelector configuration = null;
 
@@ -57,13 +72,66 @@ namespace MonoDevelop.Gendarme
             {
                 currentGendarmeAnalysisOperation = monitor.AsyncOperation;
             }
-            DispatchService.BackgroundDispatch(new StatefulMessageHandler(BuildAnalyzeAsync), new object[]
-                {
-                    monitor,
-                    configuration
-                });
+
+            DispatchService.BackgroundDispatch(
+                new StatefulMessageHandler(this.BuildAnalyzeAsync), 
+                new object[] { monitor, configuration });
         }
 
+        /// <summary>
+        /// Reports the defects.
+        /// </summary>
+        /// <param name="aRunner">A runner.</param>
+        protected void ReportDefects(GendarmeRunner theRunner)
+        {
+            // Clear all the errors if there is any.
+            TaskService.Errors.ClearByOwner(this);
+            List<Task> gendarmeAnalysisResultList = new List<Task>();
+            Collection<Defect> defects = theRunner.Defects;
+            foreach (Defect defect in defects)
+            {
+                string filePath = string.Empty;
+                int lineNumber = 0;
+                if (!string.IsNullOrEmpty(defect.Source))
+                {
+                    filePath = defect.Source.Substring(0, defect.Source.IndexOf('('));
+
+                    // Get line number
+                    int starts = defect.Source.IndexOf('(') + 2;
+                    string lineNumberStr = defect.Source.Substring(starts, defect.Source.IndexOf(')') - starts);
+                    int.TryParse(lineNumberStr.Trim(), out lineNumber);
+                }
+
+                // warning description
+                string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem
+                                     + " The solution: " + defect.Rule.Solution + Environment.NewLine
+                                     + "More information: " + defect.Rule.Uri.ToString();
+                Task gendarmeWarning = new Task(new FilePath(filePath), warningDesc, 0, lineNumber, TaskSeverity.Warning, TaskPriority.Normal, IdeApp.ProjectOperations.CurrentSelectedProject, this);
+                gendarmeAnalysisResultList.Add(gendarmeWarning);
+            }
+
+            TaskService.Errors.AddRange(gendarmeAnalysisResultList);
+            TaskService.Errors.ResetLocationList();
+            IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
+        }
+
+        /// <summary>
+        /// Update the specified info.
+        /// </summary>
+        /// <param name="info">The command info.</param>
+        protected override void Update(CommandInfo info)
+        {
+            if ((IdeApp.ProjectOperations.CurrentSelectedItem is Project)
+                || (IdeApp.ProjectOperations.CurrentSelectedItem is Solution))
+            {
+                info.Enabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Build and analyze asynchronously.
+        /// </summary>
+        /// <param name="ob">Ob.</param>
         private void BuildAnalyzeAsync(object ob)
         {
             object[] data = (object[])ob;
@@ -76,12 +144,14 @@ namespace MonoDevelop.Gendarme
 
                 if (IdeApp.ProjectOperations.CurrentSelectedItem is Project)
                 {
-                    result = (IdeApp.ProjectOperations.CurrentSelectedItem as Project).Build(monitor, 
+                    result = (IdeApp.ProjectOperations.CurrentSelectedItem as Project).Build(
+                        monitor, 
                         configuration);
                 }
                 else if (IdeApp.ProjectOperations.CurrentSelectedItem is Solution)
                 {
-                    result = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).Build(monitor, 
+                    result = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).Build(
+                        monitor, 
                         configuration);
                 }
 
@@ -103,7 +173,7 @@ namespace MonoDevelop.Gendarme
                         }
                     }
 
-                    Analyze(monitor, files);
+                    this.Analyze(monitor, files);
                 }
             }
             catch (Exception ex)
@@ -118,23 +188,19 @@ namespace MonoDevelop.Gendarme
             }
         }
 
-        protected override void Update(CommandInfo info)
-        {
-            if ((IdeApp.ProjectOperations.CurrentSelectedItem is Project)
-                || (IdeApp.ProjectOperations.CurrentSelectedItem is Solution))
-            {
-                info.Enabled = true;
-            }
-        }
-
+        /// <summary>
+        /// Analyze the specified monitor and files.
+        /// </summary>
+        /// <param name="monitor">Monitor.</param>
+        /// <param name="files">Files.</param>
         private void Analyze(IProgressMonitor monitor, List<FilePath> files)
         {
             try
             {
-                GendarmeRunner aRunner = new GendarmeRunner();
-                aRunner.LoadRules();
-                aRunner.Reset();
-                aRunner.Assemblies.Clear();
+                GendarmeRunner theRunner = new GendarmeRunner();
+                theRunner.LoadRules();
+                theRunner.Reset();
+                theRunner.Assemblies.Clear();
 
                 foreach (FilePath file in files)
                 {
@@ -143,7 +209,7 @@ namespace MonoDevelop.Gendarme
                         if (file.Extension.Equals(".dll") || file.Extension.Equals(".exe"))
                         {
                             monitor.Log.WriteLine(GettextCatalog.GetString("Register assembly " + file.FullPath + " for analysis."));
-                            aRunner.Assemblies.Add(AssemblyDefinition.ReadAssembly(file.FullPath, new ReaderParameters { AssemblyResolver = AssemblyResolver.Resolver }));
+                            theRunner.Assemblies.Add(AssemblyDefinition.ReadAssembly(file.FullPath, new ReaderParameters { AssemblyResolver = AssemblyResolver.Resolver }));
                         }
                         else
                         {
@@ -160,47 +226,18 @@ namespace MonoDevelop.Gendarme
                     }
                 }
 
-                aRunner.Execute();
+                theRunner.Execute();
 
-                ReportDefects(aRunner);
+                this.ReportDefects(theRunner);
             }
             catch (Exception e)
             {
-                monitor.ReportError("Failed to analyse. " + Environment.NewLine
+                monitor.ReportError(
+                    "Failed to analyse. " + Environment.NewLine
                     + "Message: " + e.Message + Environment.NewLine
-                    + "Stacktrace: " + e.StackTrace, e);
+                    + "Stacktrace: " + e.StackTrace,
+                    e);
             }
-        }
-
-        void ReportDefects(GendarmeRunner aRunner)
-        {
-            // Clear all the errors if there is any.
-            TaskService.Errors.ClearByOwner(this);
-            List<Task> gendarmeAnalysisResultList = new List<Task>();
-            Collection<Defect> defects = aRunner.Defects;
-            foreach (Defect defect in defects)
-            {
-                string filePath = string.Empty;
-                int lineNumber = 0;
-                if (!string.IsNullOrEmpty(defect.Source))
-                {
-                    filePath = defect.Source.Substring(0, defect.Source.IndexOf('('));
-                    // Get line number
-                    int starts = defect.Source.IndexOf("(") + 2;
-                    string lineNumberStr = defect.Source.Substring(starts, defect.Source.IndexOf(')') - starts);
-                    Int32.TryParse(lineNumberStr.Trim(), out lineNumber);
-                }
-
-                // warning description
-                string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem
-                                     + " The solution: " + defect.Rule.Solution + Environment.NewLine
-                                     + "More information: " + defect.Rule.Uri.ToString();
-                Task gendarmeWarning = new Task(new FilePath(filePath), warningDesc, 0, lineNumber, TaskSeverity.Warning, TaskPriority.Normal, IdeApp.ProjectOperations.CurrentSelectedProject, this);
-                gendarmeAnalysisResultList.Add(gendarmeWarning);
-            }
-            TaskService.Errors.AddRange(gendarmeAnalysisResultList);
-            TaskService.Errors.ResetLocationList();
-            IdeApp.Workbench.ActiveLocationList = TaskService.Errors;
         }
     }
 }
