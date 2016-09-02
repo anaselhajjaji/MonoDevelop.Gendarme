@@ -22,36 +22,29 @@ using Gendarme.Framework;
 
 namespace MonoDevelop.Gendarme
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Collections.Specialized;
-    using System.Diagnostics;
-    using System.Globalization;
-    using System.IO;
-    using System.Reflection;
-    using System.Threading;
-    using System.Web.Configuration;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.IO;
+	using System.Threading.Tasks;
 
-    using Mono.Cecil;
-    using Mono.TextEditor;
+	using Mono.Cecil;
 
-    using MonoDevelop.Components.Commands;
-    using MonoDevelop.Core;
-    using MonoDevelop.Ide;
-    using MonoDevelop.Ide.Gui;
-    using MonoDevelop.Ide.Tasks;
-    using MonoDevelop.Projects;
+	using MonoDevelop.Components.Commands;
+	using MonoDevelop.Core;
+	using MonoDevelop.Ide;
+	using MonoDevelop.Projects;
+	using MonoDevelop.Ide.Tasks;
 
-    /// <summary>
-    /// Gendarme handler.
-    /// </summary>
-    public class GendarmeHandler : CommandHandler
+	/// <summary>
+	/// Gendarme handler.
+	/// </summary>
+	public class GendarmeHandler : CommandHandler
     {
         /// <summary>
         /// The current gendarme analysis operation.
         /// </summary>
-        private static IAsyncOperation currentGendarmeAnalysisOperation = MonoDevelop.Core.ProgressMonitoring.NullAsyncOperation.Success;
+		private static Task currentGendarmeAnalysisOperation = null;
 
         /// <summary>
         /// The locker.
@@ -63,7 +56,7 @@ namespace MonoDevelop.Gendarme
         /// </summary>
         protected override void Run()
         {
-            if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
+			if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
             {
                 return;
             }
@@ -87,15 +80,14 @@ namespace MonoDevelop.Gendarme
                 configuration = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).DefaultConfiguration.Selector;
             }
 
-            IProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor();
+            ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor();
             lock (locker)
             {
-                currentGendarmeAnalysisOperation = monitor.AsyncOperation;
+				currentGendarmeAnalysisOperation = BuildAnalyzeAsync(
+				   new object[] { monitor, configuration }
+				);
+				currentGendarmeAnalysisOperation.ConfigureAwait(false);
             }
-
-            DispatchService.BackgroundDispatch(
-                new StatefulMessageHandler(this.BuildAnalyzeAsync), 
-                new object[] { monitor, configuration });
         }
 
         /// <summary>
@@ -106,7 +98,7 @@ namespace MonoDevelop.Gendarme
         {
             // Clear all the errors if there is any.
             TaskService.Errors.ClearByOwner(this);
-            List<Task> gendarmeAnalysisResultList = new List<Task>();
+            var gendarmeAnalysisResultList = new List<TaskListEntry>();
             Collection<Defect> defects = theRunner.Defects;
             foreach (Defect defect in defects)
             {
@@ -126,7 +118,7 @@ namespace MonoDevelop.Gendarme
                 string warningDesc = defect.Rule.Name + ": " + defect.Rule.Problem
                                      + " The solution: " + defect.Rule.Solution + Environment.NewLine
                                      + "More information: " + defect.Rule.Uri.ToString();
-                Task gendarmeWarning = new Task(new FilePath(filePath), warningDesc, 0, lineNumber, TaskSeverity.Warning, TaskPriority.Normal, IdeApp.ProjectOperations.CurrentSelectedProject, this);
+                TaskListEntry gendarmeWarning = new TaskListEntry(new FilePath(filePath), warningDesc, 0, lineNumber, TaskSeverity.Warning, TaskPriority.Normal, IdeApp.ProjectOperations.CurrentSelectedProject, this);
                 gendarmeAnalysisResultList.Add(gendarmeWarning);
             }
 
@@ -152,10 +144,10 @@ namespace MonoDevelop.Gendarme
         /// Build and analyze asynchronously.
         /// </summary>
         /// <param name="inputData">The input data.</param>
-        private void BuildAnalyzeAsync(object inputData)
+        private async Task BuildAnalyzeAsync(object inputData)
         {
             object[] data = (object[])inputData;
-            IProgressMonitor monitor = (IProgressMonitor)data[0];
+            ProgressMonitor monitor = (ProgressMonitor)data[0];
             ConfigurationSelector configuration = (ConfigurationSelector)data[1];
                          
             try
@@ -164,13 +156,13 @@ namespace MonoDevelop.Gendarme
 
                 if (IdeApp.ProjectOperations.CurrentSelectedItem is Project)
                 {
-                    result = (IdeApp.ProjectOperations.CurrentSelectedItem as Project).Build(
+                    result = await (IdeApp.ProjectOperations.CurrentSelectedItem as Project).Build(
                         monitor, 
                         configuration);
                 }
                 else if (IdeApp.ProjectOperations.CurrentSelectedItem is Solution)
                 {
-                    result = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).Build(
+					result = await (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).Build(
                         monitor, 
                         configuration);
                 }
@@ -186,7 +178,7 @@ namespace MonoDevelop.Gendarme
                     else if (IdeApp.ProjectOperations.CurrentSelectedItem is Solution)
                     {
                         files = new List<FilePath>();
-                        ReadOnlyCollection<Project> projects = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).GetAllProjects();
+						var projects = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).GetAllProjects();
                         foreach (Project proj in projects)
                         {
                             files.AddRange(proj.GetOutputFiles(configuration));
@@ -213,7 +205,7 @@ namespace MonoDevelop.Gendarme
         /// </summary>
         /// <param name="monitor">Monitor.</param>
         /// <param name="files">Files.</param>
-        private void Analyze(IProgressMonitor monitor, List<FilePath> files)
+        private void Analyze(ProgressMonitor monitor, List<FilePath> files)
         {
             try
             {

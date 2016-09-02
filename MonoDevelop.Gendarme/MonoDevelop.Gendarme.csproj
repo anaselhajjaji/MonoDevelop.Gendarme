@@ -32,7 +32,6 @@
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.Addins" />
     <Reference Include="gtk-sharp" />
     <Reference Include="glib-sharp" />
     <Reference Include="gdk-sharp" />
@@ -125,7 +124,7 @@
     <EmbeddedResource Include="MonoDevelop.Gendarme.addin.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.0\build\net40\MonoDevelop.Addins.targets')" />
+  <Import Project="..\packages\MonoDevelop.Addins.0.3.4\build\net40\MonoDevelop.Addins.targets" Condition="Exists('..\packages\MonoDevelop.Addins.0.3.4\build\net40\MonoDevelop.Addins.targets')" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
