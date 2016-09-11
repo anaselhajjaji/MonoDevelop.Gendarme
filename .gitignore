@@ -1,4 +1,4 @@
-/packages
-/MonoDevelop.Gendarme/bin
-/MonoDevelop.Gendarme/obj
-MonoDevelop.Gendarme.userprefs
+packages
+bin
+obj
+*.userprefs
