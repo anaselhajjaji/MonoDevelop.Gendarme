@@ -22,24 +22,24 @@ using Gendarme.Framework;
 
 namespace MonoDevelop.Gendarme
 {
-	using System;
-	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
-	using System.IO;
-	using System.Threading.Tasks;
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.IO;
+    using System.Threading.Tasks;
 
-	using Mono.Cecil;
+    using Mono.Cecil;
 
-	using MonoDevelop.Components.Commands;
-	using MonoDevelop.Core;
-	using MonoDevelop.Ide;
-	using MonoDevelop.Projects;
-	using MonoDevelop.Ide.Tasks;
+    using MonoDevelop.Components.Commands;
+    using MonoDevelop.Core;
+    using MonoDevelop.Ide;
+    using MonoDevelop.Projects;
+    using MonoDevelop.Ide.Tasks;
 
-	/// <summary>
-	/// Gendarme handler.
-	/// </summary>
-	public class GendarmeHandler : CommandHandler
+    /// <summary>
+    /// Gendarme handler.
+    /// </summary>
+    public class GendarmeHandler : CommandHandler
     {
         /// <summary>
         /// The current gendarme analysis operation.
@@ -56,7 +56,7 @@ namespace MonoDevelop.Gendarme
         /// </summary>
         protected override void Run()
         {
-			if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
+            if (currentGendarmeAnalysisOperation != null && !currentGendarmeAnalysisOperation.IsCompleted)
             {
                 return;
             }
@@ -67,7 +67,7 @@ namespace MonoDevelop.Gendarme
             {
                 return;
             }
-            
+
             // IS PROJECT ?
             if (IdeApp.ProjectOperations.CurrentSelectedItem is Project)
             {
@@ -83,10 +83,10 @@ namespace MonoDevelop.Gendarme
             ProgressMonitor monitor = IdeApp.Workbench.ProgressMonitors.GetBuildProgressMonitor();
             lock (locker)
             {
-				currentGendarmeAnalysisOperation = BuildAnalyzeAsync(
-				   new object[] { monitor, configuration }
-				);
-				currentGendarmeAnalysisOperation.ConfigureAwait(false);
+                currentGendarmeAnalysisOperation = BuildAnalyzeAsync(
+                   new object[] { monitor, configuration }
+                );
+                currentGendarmeAnalysisOperation.ConfigureAwait(false);
             }
         }
 
@@ -149,7 +149,7 @@ namespace MonoDevelop.Gendarme
             object[] data = (object[])inputData;
             ProgressMonitor monitor = (ProgressMonitor)data[0];
             ConfigurationSelector configuration = (ConfigurationSelector)data[1];
-                         
+
             try
             {
                 BuildResult result = null;
@@ -157,13 +157,13 @@ namespace MonoDevelop.Gendarme
                 if (IdeApp.ProjectOperations.CurrentSelectedItem is Project)
                 {
                     result = await (IdeApp.ProjectOperations.CurrentSelectedItem as Project).Build(
-                        monitor, 
+                        monitor,
                         configuration);
                 }
                 else if (IdeApp.ProjectOperations.CurrentSelectedItem is Solution)
                 {
-					result = await (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).Build(
-                        monitor, 
+                    result = await (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).Build(
+                        monitor,
                         configuration);
                 }
 
@@ -178,7 +178,7 @@ namespace MonoDevelop.Gendarme
                     else if (IdeApp.ProjectOperations.CurrentSelectedItem is Solution)
                     {
                         files = new List<FilePath>();
-						var projects = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).GetAllProjects();
+                        var projects = (IdeApp.ProjectOperations.CurrentSelectedItem as Solution).GetAllProjects();
                         foreach (Project proj in projects)
                         {
                             files.AddRange(proj.GetOutputFiles(configuration));
@@ -230,7 +230,7 @@ namespace MonoDevelop.Gendarme
                     }
                     catch (BadImageFormatException bife)
                     {
-                        monitor.ReportError("Can't add assembly " + file.FullPath, bife); 
+                        monitor.ReportError("Can't add assembly " + file.FullPath, bife);
                     }
                     catch (FileNotFoundException fnfe)
                     {
