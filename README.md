@@ -1,5 +1,5 @@
 # MonoDevelop.Gendarme
-MonoDevelop.Gendarme is an Addin for Xamarin Studio / MonoDevelop 5.
+MonoDevelop.Gendarme is an Addin for Xamarin Studio 6 / MonoDevelop 6.
 
 It integrates the static analyzer [Gendarme](http://www.mono-project.com/docs/tools+libraries/tools/gendarme/) into MonoDevelop and Xamarin Studio.
 
